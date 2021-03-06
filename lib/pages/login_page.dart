@@ -1,4 +1,5 @@
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_service.dart';
 import 'package:chat/widgets/btn_azul.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,24 +18,21 @@ class LoginPage extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
-          child: Container(
-            height: MediaQuery.of(context).size.height * 0.9,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Logo(titulo: 'Messenger'),
-                _Form(),
-                Labels(
-                  ruta: 'register',
-                  titulo: '¿No tienes cuenta?',
-                  subtitulo: 'Crea una ahora',
-                ),
-                Text(
-                  'Términos y condiciones de uso',
-                  style: TextStyle(fontWeight: FontWeight.w200),
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Logo(titulo: 'Messenger'),
+              _Form(),
+              Labels(
+                ruta: 'register',
+                titulo: '¿No tienes cuenta?',
+                subtitulo: 'Crea una ahora',
+              ),
+              Text(
+                'Términos y condiciones de uso',
+                style: TextStyle(fontWeight: FontWeight.w200),
+              ),
+            ],
           ),
         ),
       ),
@@ -54,6 +52,7 @@ class __FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
 
     return Container(
       margin: EdgeInsets.only(top: 40),
@@ -81,6 +80,7 @@ class __FormState extends State<_Form> {
                     final loginOk = await authService.login(
                         emailCtrl.text.trim(), passCtrl.text.trim());
                     if (loginOk) {
+                      socketService.connect();
                       // Navegar a otra panatalla
                       Navigator.pushReplacementNamed(context, 'usuarios');
                     } else {
